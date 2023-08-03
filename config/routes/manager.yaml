@@ -1,0 +1,7 @@
+manager_controllers:
+  resource: '../../app/Manager/Controller'
+  type: annotation
+  prefix: '/manager'
+  name_prefix: 'manager.'
+  defaults:
+    _format: 'json'

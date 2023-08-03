@@ -1,0 +1,55 @@
+grumphp:
+    hooks_dir: ~
+    stop_on_failure: false
+    ignore_unstaged_changes: false
+    hide_circumvention_tip: false
+    process_timeout: 60
+    tasks:
+        phpcs:
+            standard: PSR2
+            ignore_patterns:
+                - "spec/*Spec.php"
+                - "test/*.php"
+                - "stubs/*.php"
+        phpspec:
+            format: progress
+            verbose: true
+        phpunit:
+            testsuite: Unit
+        composer:
+            no_check_lock: true
+        yamllint:
+            parse_custom_tags: true
+            ignore_patterns:
+                - "#test/(.*).yml#"
+        phplint: ~
+        phpparser:
+            ignore_patterns:
+                - '#src/Event/Event.php#'
+                - '#test/Symfony/(.*)#'
+            visitors:
+                no_exit_statements: ~
+                forbidden_function_calls:
+                    blacklist: [ var_dump ]
+        paratest:
+            testsuite: E2E
+            verbose: true
+            functional: true
+        phpstan:
+            autoload_file: ~
+            configuration: ~
+            level: null
+            force_patterns: [ ]
+            ignore_patterns: [ ]
+            triggered_by: [ 'php' ]
+            memory_limit: "-1"
+            use_grumphp_paths: true
+        psalm:
+            config: psalm.xml
+            ignore_patterns: [ ]
+            no_cache: false
+            report: ~
+            output_format: null
+            threads: 1
+            triggered_by: [ 'php' ]
+            show_info: false
