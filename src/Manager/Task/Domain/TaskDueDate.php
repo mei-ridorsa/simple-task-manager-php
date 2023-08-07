@@ -14,6 +14,9 @@ final class TaskDueDate implements Stringable
     {
     }
 
+    /**
+     * @throws InvalidTaskDueDateValue
+     */
     public function createFromString(string $value): self
     {
         if (!$dateTime = DateTime::createFromFormat('d-m-Y', $value)) {
