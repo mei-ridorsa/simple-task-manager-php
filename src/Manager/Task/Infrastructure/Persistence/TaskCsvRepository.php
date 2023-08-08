@@ -23,17 +23,8 @@ final class TaskCsvRepository implements TaskRepository
     {
         $handle = fopen(implode(DIRECTORY_SEPARATOR, [self::CSV_FILE]), 'rb');
 
-        $headers = [];
         while (($data = fgetcsv($handle)) !== false) {
-            if (!$headers) {
-                $headers = $data;
-                continue;
-            }
-            /**
-             * @var array{id: string, title: string, description: string, due_date:string, status: string} $combined
-             */
-            $combined = array_combine($headers, $data);
-            yield Task::fromArray($combined);
+            yield Task::fromArray($data);
         }
 
         fclose($handle);
@@ -46,20 +37,9 @@ final class TaskCsvRepository implements TaskRepository
     {
         $handle = fopen(implode(DIRECTORY_SEPARATOR, [self::CSV_FILE]), 'rb');
 
-        $headers = [];
         while (($data = fgetcsv($handle)) !== false) {
-            if (!$headers) {
-                $headers = $data;
-                continue;
-            }
-
-            /**
-             * @var array{id: string, title: string, description: string, due_date:string, status: string} $combined
-             */
-            $combined = array_combine($headers, $data);
-
-            if ($combined['id'] === $id->value()) {
-                return Task::fromArray($combined);
+            if ($data['0'] === $id->value()) {
+                return Task::fromArray($data);
             }
         }
 
@@ -70,11 +50,17 @@ final class TaskCsvRepository implements TaskRepository
 
     public function add(Task $aggregateRoot): void
     {
-        $handle = fopen(implode(DIRECTORY_SEPARATOR, [self::CSV_FILE]), 'wb');
+        $handle = fopen(implode(DIRECTORY_SEPARATOR, [self::CSV_FILE]), 'ab');
 
         fputcsv($handle, $aggregateRoot->toArray());
 
         fclose($handle);
+    }
+
+    public function save(Task $aggregateRoot): void
+    {
+        $this->remove($aggregateRoot);
+        $this->add($aggregateRoot);
     }
 
     public function remove(Task $aggregateRoot): void
@@ -82,19 +68,8 @@ final class TaskCsvRepository implements TaskRepository
         $handle = fopen(implode(DIRECTORY_SEPARATOR, [self::CSV_FILE]), 'rwb');
         $tmp_handle = fopen(implode(DIRECTORY_SEPARATOR, [self::TMP_CSV_FILE]), 'wb');
 
-        $headers = [];
         while (($data = fgetcsv($handle)) !== false) {
-            if (!$headers) {
-                $headers = $data;
-                continue;
-            }
-
-            /**
-             * @var array{id: string, title: string, description: string, due_date:string, status: string} $combined
-             */
-            $combined = array_combine($headers, $data);
-
-            if ($combined['id'] !== $aggregateRoot->id()->value()) {
+            if ($data['0'] !== $aggregateRoot->getId()->value()) {
                 fputcsv($tmp_handle, $data);
             }
         }

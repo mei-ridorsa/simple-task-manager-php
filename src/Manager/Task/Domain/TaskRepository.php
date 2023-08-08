@@ -14,5 +14,7 @@ interface TaskRepository
 
     public function add(Task $aggregateRoot): void;
 
+    public function save(Task $aggregateRoot): void;
+
     public function remove(Task $aggregateRoot): void;
 }
