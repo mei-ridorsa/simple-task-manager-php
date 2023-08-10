@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace TaskManager\Manager\Task\Domain\Exception;
 
-class InvalidTaskDueDateValue extends \Exception
+use Exception;
+
+class InvalidTaskDueDateValue extends Exception
 {
     public static function fromValue(string $dueDate): self
     {

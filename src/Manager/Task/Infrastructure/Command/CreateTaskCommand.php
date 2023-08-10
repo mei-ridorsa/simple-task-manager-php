@@ -9,14 +9,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TaskManager\Manager\Task\Application\UseCase\Create\CreateTaskHandler;
 use TaskManager\Manager\Task\Domain\Exception\InvalidTaskDueDateValue;
-use TaskManager\Manager\Task\Domain\Task;
-use TaskManager\Manager\Task\Domain\TaskDescription;
-use TaskManager\Manager\Task\Domain\TaskDueDate;
-use TaskManager\Manager\Task\Domain\TaskId;
-use TaskManager\Manager\Task\Domain\TaskStatus;
-use TaskManager\Manager\Task\Domain\TaskTitle;
-use TaskManager\Manager\Task\Infrastructure\Persistence\TaskCsvRepository;
 
 #[AsCommand(
     name: 'task-manager:create-task',
@@ -25,11 +19,11 @@ use TaskManager\Manager\Task\Infrastructure\Persistence\TaskCsvRepository;
 )]
 final class CreateTaskCommand extends Command
 {
-    private TaskCsvRepository $repository;
+    private CreateTaskHandler $handler;
 
-    public function __construct(TaskCsvRepository $repository)
+    public function __construct(CreateTaskHandler $handler)
     {
-        $this->repository = $repository;
+        $this->handler = $handler;
 
         parent::__construct();
     }
@@ -43,21 +37,18 @@ final class CreateTaskCommand extends Command
         ;
     }
 
+
     /**
      * @throws InvalidTaskDueDateValue
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $task = new Task(
-            TaskId::generate(),
-            new TaskTitle($input->getArgument('title')),
-            new TaskDescription($input->getArgument('description')),
-            TaskDueDate::createFromString($input->getArgument('due_date')),
-            new TaskStatus('Pending'),
+        $this->handler->handle(
+            $input->getArgument('title'),
+            $input->getArgument('description'),
+            $input->getArgument('due_date'),
         );
-
-        $this->repository->add($task);
 
         $output->writeln('Task created ');
 

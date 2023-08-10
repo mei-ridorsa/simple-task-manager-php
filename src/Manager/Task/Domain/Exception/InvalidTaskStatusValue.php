@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace TaskManager\Manager\Task\Domain\Exception;
 
-final class InvalidTaskStatusValue extends \Exception
+use Exception;
+
+final class InvalidTaskStatusValue extends Exception
 {
     public static function fromValue(string $status): self
     {

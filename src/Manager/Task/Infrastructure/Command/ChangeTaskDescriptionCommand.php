@@ -9,9 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use TaskManager\Manager\Task\Domain\TaskId;
-use TaskManager\Manager\Task\Domain\TaskDescription;
-use TaskManager\Manager\Task\Infrastructure\Persistence\TaskCsvRepository;
+use TaskManager\Manager\Task\Application\UseCase\Update\ChangeTaskDescriptionHandler;
 
 #[AsCommand(
     name: 'task-manager:change-description',
@@ -20,11 +18,11 @@ use TaskManager\Manager\Task\Infrastructure\Persistence\TaskCsvRepository;
 )]
 final class ChangeTaskDescriptionCommand extends Command
 {
-    private TaskCsvRepository $repository;
+    private ChangeTaskDescriptionHandler $handler;
 
-    public function __construct(TaskCsvRepository $repository)
+    public function __construct(ChangeTaskDescriptionHandler $handler)
     {
-        $this->repository = $repository;
+        $this->handler = $handler;
 
         parent::__construct();
     }
@@ -39,15 +37,10 @@ final class ChangeTaskDescriptionCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $task = $this->repository->getById(new TaskId($input->getArgument('id')));
-
-        if (!$task) {
-            $output->writeln('Task not found: ' . $input->getArgument('id'));
-        }
-
-        $task->setTaskDescription(new TaskDescription($input->getArgument('description')));
-
-        $this->repository->save($task);
+        $this->handler->handle(
+            $input->getArgument('id'),
+            $input->getArgument('description'),
+        );
 
         $output->writeln('Task description changed: ' . $input->getArgument('id'));
 

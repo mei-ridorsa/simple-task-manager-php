@@ -36,7 +36,8 @@ final class TaskCsvRepository implements TaskRepository
     public function getById(TaskId $id): ?Task
     {
         $handle = fopen(implode(DIRECTORY_SEPARATOR, [self::CSV_FILE]), 'rb');
-
+        //This is assuming that the CSV is well-formed and the first colum is the ID. One improvement would be to check
+        //it first.
         while (($data = fgetcsv($handle)) !== false) {
             if ($data['0'] === $id->value()) {
                 return Task::fromArray($data);
@@ -59,12 +60,15 @@ final class TaskCsvRepository implements TaskRepository
 
     public function save(Task $aggregateRoot): void
     {
+        //This is not the most efficient way to update things, but that's all the Standard library allows
         $this->remove($aggregateRoot);
         $this->add($aggregateRoot);
     }
 
     public function remove(Task $aggregateRoot): void
     {
+        //This creates a new file with all tasks but the one being removed. It's not very efficient but, again,
+        //it's all the Standard library allows
         $handle = fopen(implode(DIRECTORY_SEPARATOR, [self::CSV_FILE]), 'rwb');
         $tmp_handle = fopen(implode(DIRECTORY_SEPARATOR, [self::TMP_CSV_FILE]), 'wb');
 

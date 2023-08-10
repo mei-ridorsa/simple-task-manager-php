@@ -9,9 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use TaskManager\Manager\Task\Domain\TaskId;
-use TaskManager\Manager\Task\Domain\TaskDueDate;
-use TaskManager\Manager\Task\Infrastructure\Persistence\TaskCsvRepository;
+use TaskManager\Manager\Task\Application\UseCase\Update\ChangeTaskDueDateHandler;
 
 #[AsCommand(
     name: 'task-manager:change-duedate',
@@ -20,11 +18,11 @@ use TaskManager\Manager\Task\Infrastructure\Persistence\TaskCsvRepository;
 )]
 final class ChangeTaskDueDateCommand extends Command
 {
-    private TaskCsvRepository $repository;
+    private ChangeTaskDueDateHandler $handler;
 
-    public function __construct(TaskCsvRepository $repository)
+    public function __construct(ChangeTaskDueDateHandler $handler)
     {
-        $this->repository = $repository;
+        $this->handler = $handler;
 
         parent::__construct();
     }
@@ -39,15 +37,10 @@ final class ChangeTaskDueDateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $task = $this->repository->getById(new TaskId($input->getArgument('id')));
-
-        if (!$task) {
-            $output->writeln('Task not found: ' . $input->getArgument('id'));
-        }
-
-        $task->setTaskDueDate(TaskDueDate::createFromString($input->getArgument('due_date')));
-
-        $this->repository->save($task);
+        $this->handler->handle(
+            $input->getArgument('id'),
+            $input->getArgument('due_date'),
+        );
 
         $output->writeln('Task due date changed: ' . $input->getArgument('id'));
 

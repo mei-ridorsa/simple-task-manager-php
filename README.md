@@ -30,7 +30,7 @@ Edit a task:
 
 ## Project structure
 This project is structured following Domain Driven Design principles. As the application is very small, there is only one bounded context (Manager) and a Domain (Task). This domain is divided in the three common DDD layers:
-* Application: This layer is empty in this project, as most of the use case logic is handled by commands (more on that later). I found it overkill to extract that logic as this is such a small project.
+* Application: This layer contains the use cases of creating, updating and removing tasks.
 * Domain: Here live the definition of the aggregate Root, the value objects, the repository interface and the exceptions.
 * Infrastructure: Here live the persistence implementation (more on that in the next section) and the different Symfony commands.
 

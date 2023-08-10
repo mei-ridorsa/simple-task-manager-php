@@ -10,6 +10,8 @@ use Stringable;
 
 final class TaskId implements Stringable
 {
+    //This ID is a UUID. I realized later that this doesn't make a lot of sense and that it would be more user firendly
+    //to just use any numerical ID
     public function __construct(protected string $value)
     {
         $this->ensureIsValidUuid($value);
