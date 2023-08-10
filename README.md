@@ -36,3 +36,6 @@ This project is structured following Domain Driven Design principles. As the app
 
 ## Persistence
 Tasks are persisted in a CSV file located in the root of the project called `input.csv`. As a result, repository methods are a bit inefficient. For instance, the `remove` function creates a whole new file with all the records but the one being deleted. This is not ideal, but it's no issue with a project this size.
+
+## Testing
+Unit tests can be run using `php bin/phpunit`
